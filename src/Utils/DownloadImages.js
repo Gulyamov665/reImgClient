@@ -1,9 +1,9 @@
 import axios from 'axios'
-
+const baseURL = process.env.REACT_APP_BASE_URL
 export const DownloadImages = async (name_adress) => {
   try {
     const response = await axios.get(
-      `http://localhost:8000/api/sticker/${name_adress}`,
+      `http://${baseURL}/sticker/${name_adress}`,
       { responseType: 'blob' }
     )
 

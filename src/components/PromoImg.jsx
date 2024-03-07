@@ -5,6 +5,8 @@ import PromoCard from './PromoCard'
 import { DownloadImages } from '../Utils/DownloadImages'
 import { useNavigate } from 'react-router-dom'
 
+const baseURL = process.env.REACT_APP_BASE_URL
+
 export default function PromoImg() {
   const [promoImg, setPromoImg] = useState(null)
   const [origin, setOrigin] = useState([])
@@ -27,7 +29,7 @@ export default function PromoImg() {
 
     await axios({
       method: 'post',
-      url: 'http://localhost:8000/api/sticker/create',
+      url: `${baseURL}/sticker/create`,
       data: formData,
     }).then(() => {
       load()
@@ -75,7 +77,7 @@ export default function PromoImg() {
 
   const load = () => {
     axios
-      .post('http://localhost:8000/api/sticker', {
+      .post(`${baseURL}/api/sticker`, {
         vendor,
       })
       .then((response) => {
