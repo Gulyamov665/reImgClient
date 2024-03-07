@@ -1,25 +1,34 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from 'react'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import MainForm from './components/MainForm'
+import { Route, Routes } from 'react-router-dom'
+import ImageComponent from './components/ImageComponent'
+import PromoImg from './components/PromoImg'
 
 function App() {
+  const [detail, setDetail] = useState([])
+
+  useEffect(() => {
+    getDetails()
+  }, [])
+
+  const getDetails = async () => {
+    const response = await fetch('http://127.0.0.1:8000/api/detail')
+    const data = await response.json()
+    setDetail(data)
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {/* <div>
+        <MainForm />
+      </div> */}
+
+      <div>
+        <PromoImg />
+      </div>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
