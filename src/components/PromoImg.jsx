@@ -31,24 +31,31 @@ export default function PromoImg() {
       method: 'post',
       url: `${baseURL}/sticker/create`,
       data: formData,
-    }).then(() => {
-      load()
     })
+      .then(() => {
+        load()
+      })
+      .catch((error) => console.log('Ошибка :', error))
   }
 
   const handleShowPromo = (e) => {
     const file = e.target.files[0]
-    setPromoImg(file)
-    const reader = new FileReader()
 
-    reader.onload = () => {
-      setPromoToShow(reader.result)
-    }
-    reader.onerror = (error) => {
-      console.error('Error reading file:', error)
-    }
+    if (file instanceof Blob) {
+      setPromoImg(file)
+      const reader = new FileReader()
 
-    reader.readAsDataURL(file)
+      reader.onload = () => {
+        setPromoToShow(reader.result)
+      }
+      reader.onerror = (error) => {
+        console.error('Error reading file:', error)
+      }
+
+      reader.readAsDataURL(file)
+    } else {
+      console.error('Переданный объект не является Blob')
+    }
   }
 
   const handleShowOrigin = (e) => {
@@ -77,7 +84,7 @@ export default function PromoImg() {
 
   const load = () => {
     axios
-      .post(`${baseURL}/api/sticker`, {
+      .post(`${baseURL}/sticker`, {
         vendor,
       })
       .then((response) => {
@@ -98,9 +105,9 @@ export default function PromoImg() {
             <label htmlFor="">Vendor</label>
             <input
               className="form-control"
-              required
               type="text"
               onChange={(e) => setVendor(e.target.value)}
+              required
             />
 
             <label htmlFor="">Выберите Tag </label>
