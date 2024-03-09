@@ -14,9 +14,10 @@ export default function PromoImg() {
   const [promoToShow, setPromoToShow] = useState(null)
   const [originToShow, setOriginToShow] = useState([])
   const [loadZip, setLoadZip] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const navigate = useNavigate()
-
+  console.log(loading)
   const handleLoad = async (e) => {
     e.preventDefault()
     let formData = new FormData()
@@ -83,6 +84,7 @@ export default function PromoImg() {
   }
 
   const load = () => {
+    setLoading(true)
     axios
       .post(`${baseURL}/sticker`, {
         vendor,
@@ -94,6 +96,10 @@ export default function PromoImg() {
       })
       .catch((error) => {
         console.error('Ошибка:', error)
+      })
+      .finally(() => {
+        setLoading(false)
+        console.log('Запрос завершен')
       })
   }
 
@@ -124,12 +130,21 @@ export default function PromoImg() {
               multiple
               onChange={(e) => handleShowOrigin(e)}
             />
-            <button
-              onClick={(e) => handleLoad(e)}
-              className="btn btn-warning large mt-3"
-            >
-              Преобразовать
-            </button>
+            {!loading ? (
+              <button
+                onClick={(e) => handleLoad(e)}
+                className="btn btn-warning w-50 large mt-3"
+              >
+                Преобразовать
+              </button>
+            ) : (
+              <button className="btn btn-warning w-50 large mt-3" disabled>
+                <span
+                  className="spinner-border spinner-border-sm"
+                  aria-hidden="true"
+                ></span>
+              </button>
+            )}
             {loadZip && (
               <p
                 className="btn btn-success ms-3"
