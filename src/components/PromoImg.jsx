@@ -2,13 +2,12 @@ import React, { useState } from 'react'
 import axios from 'axios'
 import OriginCard from './OriginCard'
 import PromoCard from './PromoCard'
-import { DownloadImages } from '../Utils/DownloadImages'
-import { useNavigate } from 'react-router-dom'
+import Form from '../forms/Form'
+import { toast } from 'react-toastify'
 
 const baseURL = process.env.REACT_APP_BASE_URL
 
 export default function PromoImg() {
-  const [promoImg, setPromoImg] = useState(null)
   const [origin, setOrigin] = useState([])
   const [vendor, setVendor] = useState('')
   const [promoToShow, setPromoToShow] = useState(null)
@@ -16,14 +15,11 @@ export default function PromoImg() {
   const [loadZip, setLoadZip] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  const navigate = useNavigate()
-  console.log(loading)
-  const handleLoad = async (e) => {
-    e.preventDefault()
+  const handleLoad = async (data) => {
     let formData = new FormData()
 
-    formData.append('vendor', vendor)
-    formData.append('promo_image', promoImg)
+    formData.append('vendor', data.vendor)
+    formData.append('promo_image', data.promo_image[0])
     origin.forEach((image) => {
       formData.append('origin_images', image)
     })
@@ -33,17 +29,16 @@ export default function PromoImg() {
       url: `${baseURL}/sticker/create`,
       data: formData,
     })
-      .then(() => {
-        load()
+      .then((response) => {
+        load(response.data.vendor)
       })
-      .catch((error) => console.log('Ошибка :', error))
+      .catch((error) => console.log('Ошибка запроса:', error))
   }
 
   const handleShowPromo = (e) => {
     const file = e.target.files[0]
 
     if (file instanceof Blob) {
-      setPromoImg(file)
       const reader = new FileReader()
 
       reader.onload = () => {
@@ -83,9 +78,9 @@ export default function PromoImg() {
     })
   }
 
-  const load = () => {
+  const load = async (vendor) => {
     setLoading(true)
-    axios
+    await axios
       .post(`${baseURL}/sticker`, {
         vendor,
       })
@@ -99,7 +94,8 @@ export default function PromoImg() {
       })
       .finally(() => {
         setLoading(false)
-        console.log('Запрос завершен')
+        setVendor(vendor)
+        toast.success('Запрос успешно обработан')
       })
   }
 
@@ -107,54 +103,14 @@ export default function PromoImg() {
     <>
       <div className="container d-flex justify-content-evenly mt-5 flex-wrap">
         <div>
-          <form className="form-group">
-            <label htmlFor="">Vendor</label>
-            <input
-              className="form-control"
-              type="text"
-              onChange={(e) => setVendor(e.target.value)}
-              required
-            />
-
-            <label htmlFor="">Выберите Tag </label>
-            <input
-              className="form-control"
-              type="file"
-              onChange={(e) => handleShowPromo(e)}
-            />
-
-            <label htmlFor="">Выберите Origin</label>
-            <input
-              className="form-control"
-              type="file"
-              multiple
-              onChange={(e) => handleShowOrigin(e)}
-            />
-            {!loading ? (
-              <button
-                onClick={(e) => handleLoad(e)}
-                className="btn btn-warning w-50 large mt-3"
-              >
-                Преобразовать
-              </button>
-            ) : (
-              <button className="btn btn-warning w-50 large mt-3" disabled>
-                <span
-                  className="spinner-border spinner-border-sm"
-                  aria-hidden="true"
-                ></span>
-              </button>
-            )}
-            {loadZip && (
-              <p
-                className="btn btn-success ms-3"
-                style={{ marginTop: '32px' }}
-                onClick={() => DownloadImages(vendor)}
-              >
-                Загрузить
-              </p>
-            )}
-          </form>
+          <Form
+            loading={loading}
+            handleShowPromo={handleShowPromo}
+            handleShowOrigin={handleShowOrigin}
+            handleLoad={handleLoad}
+            loadZip={loadZip}
+            vendor={vendor}
+          />
         </div>
         <div>
           <PromoCard promoToShow={promoToShow} />

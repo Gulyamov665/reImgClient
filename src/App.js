@@ -1,32 +1,31 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
-import MainForm from './components/MainForm'
-import { Route, Routes } from 'react-router-dom'
-import ImageComponent from './components/ImageComponent'
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css'
 import PromoImg from './components/PromoImg'
 
+
 function App() {
-  const [detail, setDetail] = useState([])
+  // const [detail, setDetail] = useState([])
 
-  useEffect(() => {
-    getDetails()
-  }, [])
+  // useEffect(() => {
+  //   getDetails()
+  // }, [])
 
-  const getDetails = async () => {
-    const response = await fetch('http://127.0.0.1:8000/api/detail')
-    const data = await response.json()
-    setDetail(data)
-  }
+  // const getDetails = async () => {
+  //   const response = await fetch('http://127.0.0.1:8000/api/detail')
+  //   const data = await response.json()
+  //   setDetail(data)
+  // }
 
   return (
     <div className="App">
-      {/* <div>
-        <MainForm />
-      </div> */}
+
 
       <div>
         <PromoImg />
       </div>
+      <ToastContainer />
     </div>
   )
 }
