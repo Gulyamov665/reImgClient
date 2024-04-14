@@ -10,6 +10,7 @@ export default function Form({
   vendor,
   promoData,
   setSelValue,
+  loadCreating,
 }) {
   const {
     register,
@@ -50,7 +51,7 @@ export default function Form({
           {...register('origin_images')}
           onChange={(e) => handleShowOrigin(e)}
         />
-        {!loading ? (
+        {!loading && !loadCreating ? (
           <button
             // onClick={(e) => handleLoad(e)}
             className="btn btn-warning w-50 large mt-3"

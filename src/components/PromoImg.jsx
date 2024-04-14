@@ -10,20 +10,19 @@ const baseURL = process.env.REACT_APP_BASE_URL
 export default function PromoImg() {
   const [origin, setOrigin] = useState([])
   const [vendor, setVendor] = useState('')
-  const [promoToShow, setPromoToShow] = useState(null)
   const [originToShow, setOriginToShow] = useState([])
   const [loadZip, setLoadZip] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [loadCreating, setLoadCreating] = useState(false)
   const [promoData, setPromoData] = useState([])
   const [selValue, setSelValue] = useState(null)
-
-  console.log(vendor)
 
   useEffect(() => {
     axios.get(`${baseURL}/tags`).then((res) => setPromoData(res.data))
   }, [])
 
   const handleLoad = async (data) => {
+    setLoadCreating(true)
     let formData = new FormData()
 
     formData.append('name', data.vendor)
@@ -40,26 +39,8 @@ export default function PromoImg() {
         load(response.data.name)
       })
       .catch((error) => console.log('Ошибка запроса:', error))
+      .finally(() => setLoadCreating(false))
   }
-
-  // const handleShowPromo = (e) => {
-  //   const file = e.target.files[0]
-
-  //   if (file instanceof Blob) {
-  //     const reader = new FileReader()
-
-  //     reader.onload = () => {
-  //       setPromoToShow(reader.result)
-  //     }
-  //     reader.onerror = (error) => {
-  //       console.error('Error reading file:', error)
-  //     }
-
-  //     reader.readAsDataURL(file)
-  //   } else {
-  //     console.error('Переданный объект не является Blob')
-  //   }
-  // }
 
   const handleShowOrigin = (e) => {
     const files = Array.from(e.target.files)
@@ -113,13 +94,13 @@ export default function PromoImg() {
         <div>
           <Form
             loading={loading}
-            // handleShowPromo={handleShowPromo}
             handleShowOrigin={handleShowOrigin}
             handleLoad={handleLoad}
             loadZip={loadZip}
             vendor={vendor}
             promoData={promoData}
             setSelValue={setSelValue}
+            loadCreating={loadCreating}
           />
         </div>
 
