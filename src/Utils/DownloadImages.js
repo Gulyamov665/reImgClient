@@ -3,7 +3,7 @@ const baseURL = process.env.REACT_APP_BASE_URL
 export const DownloadImages = async (name_adress) => {
   try {
     const response = await axios.get(
-      `${baseURL}/sticker/${name_adress}`,
+      `${baseURL}/vendor/${name_adress}`,
       { responseType: 'blob' }
     )
 

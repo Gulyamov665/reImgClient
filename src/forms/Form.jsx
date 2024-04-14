@@ -4,16 +4,16 @@ import { DownloadImages } from '../Utils/DownloadImages'
 
 export default function Form({
   loading,
-  handleShowPromo,
   handleShowOrigin,
   handleLoad,
   loadZip,
   vendor,
+  promoData,
+  setSelValue,
 }) {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm()
 
@@ -29,12 +29,18 @@ export default function Form({
         />
 
         <label htmlFor="">Выберите Tag </label>
-        <input
-          className="form-control"
-          type="file"
-          {...register('promo_image')}
-          onChange={(e) => handleShowPromo(e)}
-        />
+        <select
+          className="form-select"
+          onChange={(e) => setSelValue(e.target.value)}
+        >
+          <option defaultValue={'DEFAULT'}>Open this select menu</option>
+          {promoData &&
+            promoData?.map((obj) => (
+              <option key={obj.id} value={obj.tag}>
+                {obj.name}
+              </option>
+            ))}
+        </select>
 
         <label htmlFor="">Выберите Origin</label>
         <input

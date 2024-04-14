@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import OriginCard from './OriginCard'
 import PromoCard from './PromoCard'
@@ -14,45 +14,52 @@ export default function PromoImg() {
   const [originToShow, setOriginToShow] = useState([])
   const [loadZip, setLoadZip] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [promoData, setPromoData] = useState([])
+  const [selValue, setSelValue] = useState(null)
+
+  console.log(vendor)
+
+  useEffect(() => {
+    axios.get(`${baseURL}/tags`).then((res) => setPromoData(res.data))
+  }, [])
 
   const handleLoad = async (data) => {
     let formData = new FormData()
 
-    formData.append('vendor', data.vendor)
-    formData.append('promo_image', data.promo_image[0])
+    formData.append('name', data.vendor)
     origin.forEach((image) => {
-      formData.append('origin_images', image)
+      formData.append('uploaded_images', image)
     })
 
     await axios({
       method: 'post',
-      url: `${baseURL}/sticker/create`,
+      url: `${baseURL}/vendor/create`,
       data: formData,
     })
       .then((response) => {
-        load(response.data.vendor)
+        load(response.data.name)
       })
       .catch((error) => console.log('Ошибка запроса:', error))
   }
 
-  const handleShowPromo = (e) => {
-    const file = e.target.files[0]
+  // const handleShowPromo = (e) => {
+  //   const file = e.target.files[0]
 
-    if (file instanceof Blob) {
-      const reader = new FileReader()
+  //   if (file instanceof Blob) {
+  //     const reader = new FileReader()
 
-      reader.onload = () => {
-        setPromoToShow(reader.result)
-      }
-      reader.onerror = (error) => {
-        console.error('Error reading file:', error)
-      }
+  //     reader.onload = () => {
+  //       setPromoToShow(reader.result)
+  //     }
+  //     reader.onerror = (error) => {
+  //       console.error('Error reading file:', error)
+  //     }
 
-      reader.readAsDataURL(file)
-    } else {
-      console.error('Переданный объект не является Blob')
-    }
-  }
+  //     reader.readAsDataURL(file)
+  //   } else {
+  //     console.error('Переданный объект не является Blob')
+  //   }
+  // }
 
   const handleShowOrigin = (e) => {
     const files = Array.from(e.target.files)
@@ -81,8 +88,9 @@ export default function PromoImg() {
   const load = async (vendor) => {
     setLoading(true)
     await axios
-      .post(`${baseURL}/sticker`, {
+      .post(`${baseURL}/vendor/sticker`, {
         vendor,
+        tag: selValue,
       })
       .then((response) => {
         if (response.status === 200) {
@@ -105,22 +113,25 @@ export default function PromoImg() {
         <div>
           <Form
             loading={loading}
-            handleShowPromo={handleShowPromo}
+            // handleShowPromo={handleShowPromo}
             handleShowOrigin={handleShowOrigin}
             handleLoad={handleLoad}
             loadZip={loadZip}
             vendor={vendor}
+            promoData={promoData}
+            setSelValue={setSelValue}
           />
         </div>
+
         <div>
-          <PromoCard promoToShow={promoToShow} />
+          <PromoCard promoToShow={selValue} />
         </div>
       </div>
       <div className="container d-flex mt-5 flex-wrap">
         {originToShow &&
           originToShow?.map((image, i) => (
             <div key={i}>
-              <OriginCard originToShow={image} promoToShow={promoToShow} />
+              <OriginCard originToShow={image} promoToShow={selValue} />
             </div>
           ))}
       </div>
